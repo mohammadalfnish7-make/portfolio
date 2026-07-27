@@ -1,0 +1,345 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+enum AuthTokenType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+enum ApiKeyScope {
+  content
+  code
+}
+
+enum CourseFormat {
+  ONLINE
+  IN_PERSON
+  HYBRID
+}
+
+enum CourseStatus {
+  DRAFT
+  OPEN
+  FULL
+  RUNNING
+  COMPLETED
+  CANCELLED
+}
+
+enum EnrollmentStatus {
+  REGISTERED
+  CONTACTED
+  CONFIRMED
+  WAITLISTED
+  CANCELLED
+  NO_RESPONSE
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AgentTaskStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+enum PendingChangeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id              String     @id @default(cuid())
+  email           String     @unique
+  role            Role       @default(STUDENT)
+  name            String?
+  phone           String?
+  passwordHash    String
+  emailVerifiedAt DateTime?
+  failedLogins    Int        @default(0)
+  lockedUntil     DateTime?
+  deletedAt       DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  tokens           AuthToken[]
+  enrollments      Enrollment[]
+  reviews          Review[]
+  paymentsRecorded PaymentRecord[]
+  reviewsModerated Review[]        @relation("ReviewModerator")
+}
+
+model AuthToken {
+  id        String        @id @default(cuid())
+  userId    String
+  type      AuthTokenType
+  tokenHash String        @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+}
+
+model ApiKey {
+  id         String      @id @default(cuid())
+  label      String
+  keyHash    String      @unique
+  scope      ApiKeyScope
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime    @default(now())
+}
+
+model Course {
+  id            String       @id @default(cuid())
+  slug          String       @unique
+  title         String
+  subtitle      String?
+  summary       String
+  description   String
+  outcomes      String[]
+  prerequisites String[]
+  syllabus      Json
+  level         String
+  language      String       @default("en")
+  format        CourseFormat @default(ONLINE)
+  location      String?
+  startDate     DateTime?
+  endDate       DateTime?
+  schedule      String?
+  totalHours    Int?
+  priceMinor    Int
+  currency      String       @default("AED")
+  capacity      Int
+  seatsTaken    Int          @default(0)
+  status        CourseStatus @default(DRAFT)
+  published     Boolean      @default(false)
+  coverImage    String?
+  materialsUrl  String?
+  sortOrder     Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  enrollments Enrollment[]
+  reviews     Review[]
+
+  @@index([published, startDate])
+}
+
+model Enrollment {
+  id              String           @id @default(cuid())
+  courseId        String
+  userId          String?
+  name            String
+  email           String
+  phone           String
+  status          EnrollmentStatus @default(REGISTERED)
+  agreedPriceMinor Int?
+  currency        String           @default("AED")
+  adminNotes      String?
+  confirmedAt     DateTime?
+  source          String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  course   Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user     User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  payments PaymentRecord[]
+
+  @@unique([courseId, email])
+  @@index([courseId, status])
+  @@index([status, createdAt])
+}
+
+model PaymentRecord {
+  id               String   @id @default(cuid())
+  enrollmentId     String
+  method           String
+  amountMinor      Int
+  currency         String
+  reference        String?
+  receivedAt       DateTime
+  recordedByUserId String?
+  createdAt        DateTime @default(now())
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  recordedBy User?      @relation(fields: [recordedByUserId], references: [id], onDelete: SetNull)
+}
+
+model Review {
+  id                String       @id @default(cuid())
+  courseId          String?
+  userId            String?
+  authorName        String
+  rating            Int
+  body              String
+  status            ReviewStatus @default(PENDING)
+  verifiedStudent   Boolean      @default(false)
+  approvedAt        DateTime?
+  moderatedByUserId String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  course      Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  user        User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  moderatedBy User?   @relation("ReviewModerator", fields: [moderatedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([courseId, status])
+  @@index([status, createdAt])
+}
+
+model Project {
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  role         String?
+  company      String?
+  period       String?
+  summary      String
+  problem      String
+  approach     String
+  outcome      String
+  tech         String[]
+  metrics      Json?
+  demoUrl      String?
+  repoUrl      String?
+  diagramUrl   String?
+  confidential Boolean  @default(false)
+  featured     Boolean  @default(false)
+  sortOrder    Int      @default(0)
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([published, sortOrder])
+}
+
+model SiteContent {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model PageView {
+  id            String   @id @default(cuid())
+  path          String
+  referrer      String?
+  visitorId     String
+  sessionId     String
+  country       String?
+  deviceType    String?
+  viewportBucket String?
+  browser       String?
+  durationMs    Int?
+  createdAt     DateTime @default(now())
+
+  @@index([path, createdAt])
+  @@index([createdAt])
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  name      String
+  path      String
+  target    String?
+  meta      Json?
+  visitorId String
+  sessionId String
+  createdAt DateTime @default(now())
+
+  @@index([name, createdAt])
+  @@index([createdAt])
+}
+
+model DailyStat {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  path      String
+  views     Int      @default(0)
+  visitors  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([date, path])
+}
+
+model ChangeLog {
+  id            String   @id @default(cuid())
+  actor         String
+  action        String
+  entity        String
+  entityId      String?
+  args          Json?
+  diff          Json?
+  publicVisible Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([publicVisible, createdAt])
+}
+
+model PendingChange {
+  id        String              @id @default(cuid())
+  actor     String
+  action    String
+  entity    String
+  payload   Json
+  status    PendingChangeStatus @default(PENDING)
+  reason    String?
+  createdAt DateTime            @default(now())
+  decidedAt DateTime?
+}
+
+model IdempotencyKey {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  toolName  String
+  status    String   @default("in_progress")
+  response  Json?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model AgentTask {
+  id        String          @id @default(cuid())
+  agentId   String?
+  runId     String?
+  prompt    String
+  status    AgentTaskStatus @default(QUEUED)
+  prUrl     String?
+  error     String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model RateLimit {
+  id          String   @id @default(cuid())
+  bucket      String
+  windowStart DateTime
+  count       Int      @default(0)
+
+  @@unique([bucket, windowStart])
+}

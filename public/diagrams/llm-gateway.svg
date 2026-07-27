@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" role="img" aria-label="LLM gateway diagram">
+  <rect width="960" height="360" fill="#141b24"/>
+  <text x="40" y="40" fill="#e8eef5" font-size="20">Async LLM Gateway</text>
+  <rect x="40" y="80" width="140" height="50" rx="8" fill="#1a3358" stroke="#3d8bfd"/><text x="70" y="110" fill="#e8eef5" font-size="13">Clients</text>
+  <rect x="230" y="80" width="180" height="50" rx="8" fill="#1a3358" stroke="#3d8bfd"/><text x="260" y="110" fill="#e8eef5" font-size="13">FastAPI gateway</text>
+  <rect x="460" y="50" width="140" height="40" rx="8" fill="#0c1117" stroke="#243041"/><text x="490" y="75" fill="#e8eef5" font-size="12">Redis cache</text>
+  <rect x="460" y="110" width="140" height="40" rx="8" fill="#0c1117" stroke="#243041"/><text x="485" y="135" fill="#e8eef5" font-size="12">RabbitMQ</text>
+  <rect x="660" y="50" width="120" height="40" rx="8" fill="#0c1117" stroke="#243041"/><text x="685" y="75" fill="#e8eef5" font-size="12">OpenAI</text>
+  <rect x="660" y="110" width="120" height="40" rx="8" fill="#0c1117" stroke="#243041"/><text x="680" y="135" fill="#e8eef5" font-size="12">Anthropic</text>
+  <rect x="660" y="170" width="120" height="40" rx="8" fill="#0c1117" stroke="#243041"/><text x="695" y="195" fill="#e8eef5" font-size="12">Others</text>
+  <text x="40" y="220" fill="#3ecf8e" font-size="16">Outcome: ~95% LLM cost reduction via semantic caching + routing</text>
+  <text x="40" y="280" fill="#8b9aab" font-size="13">Confidential client work  architecture shown, code not public</text>
+</svg>

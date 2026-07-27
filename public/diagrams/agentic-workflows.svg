@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" role="img" aria-label="Agentic workflows diagram">
+  <rect width="960" height="320" fill="#141b24"/>
+  <text x="40" y="40" fill="#e8eef5" font-size="20">Agentic Workflow Automation</text>
+  <rect x="40" y="100" width="160" height="60" rx="8" fill="#1a3358" stroke="#3d8bfd"/><text x="65" y="135" fill="#e8eef5" font-size="13">WhatsApp bots</text>
+  <rect x="260" y="100" width="140" height="60" rx="8" fill="#1a3358" stroke="#3d8bfd"/><text x="300" y="135" fill="#e8eef5" font-size="13">n8n</text>
+  <rect x="460" y="70" width="160" height="50" rx="8" fill="#0c1117" stroke="#243041"/><text x="500" y="100" fill="#e8eef5" font-size="13">Chatwoot</text>
+  <rect x="460" y="140" width="160" height="50" rx="8" fill="#0c1117" stroke="#243041"/><text x="500" y="170" fill="#e8eef5" font-size="13">ERPNext</text>
+  <text x="40" y="240" fill="#8b9aab" font-size="13">Intake ’ identity ’ triage ’ system of record via webhooks</text>
+</svg>

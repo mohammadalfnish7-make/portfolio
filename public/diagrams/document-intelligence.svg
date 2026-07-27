@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" role="img" aria-label="Document intelligence diagram">
+  <rect width="960" height="320" fill="#141b24"/>
+  <text x="40" y="40" fill="#e8eef5" font-size="20">Document Intelligence Pipeline</text>
+  <rect x="30" y="90" width="130" height="50" rx="8" fill="#1a3358" stroke="#3d8bfd"/><text x="55" y="120" fill="#e8eef5" font-size="12">Ingest</text>
+  <rect x="190" y="90" width="130" height="50" rx="8" fill="#1a3358" stroke="#3d8bfd"/><text x="220" y="120" fill="#e8eef5" font-size="12">OCR/LLM</text>
+  <rect x="350" y="90" width="130" height="50" rx="8" fill="#1a3358" stroke="#3d8bfd"/><text x="365" y="120" fill="#e8eef5" font-size="12">Validate</text>
+  <rect x="510" y="90" width="130" height="50" rx="8" fill="#1a3358" stroke="#3d8bfd"/><text x="540" y="120" fill="#e8eef5" font-size="12">Risk</text>
+  <rect x="670" y="90" width="130" height="50" rx="8" fill="#1a3358" stroke="#3d8bfd"/><text x="695" y="120" fill="#e8eef5" font-size="12">Alert</text>
+  <text x="40" y="200" fill="#8b9aab" font-size="13">Celery / RabbitMQ worker pools · Pydantic schemas · Stripe billing</text>
+</svg>

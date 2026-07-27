@@ -1,0 +1,16 @@
+# Never copy private CVs or secrets into the image
+private
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+node_modules
+.next
+out
+coverage
+.lighthouseci
+README.md
+docs
+*.md
+!public/**

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-label="Platform overview">
+  <rect width="960" height="420" fill="#141b24"/>
+  <text x="40" y="48" fill="#e8eef5" font-family="system-ui" font-size="22">Course platform + portfolio + agents</text>
+  <rect x="80" y="80" width="200" height="64" rx="10" fill="#1a3358" stroke="#3d8bfd"/>
+  <text x="130" y="118" fill="#e8eef5" font-size="14">Traefik / TLS</text>
+  <rect x="360" y="80" width="220" height="64" rx="10" fill="#1a3358" stroke="#3d8bfd"/>
+  <text x="395" y="118" fill="#e8eef5" font-size="14">Next.js standalone</text>
+  <rect x="660" y="80" width="180" height="64" rx="10" fill="#1a3358" stroke="#3d8bfd"/>
+  <text x="705" y="118" fill="#e8eef5" font-size="14">Postgres</text>
+  <path d="M280 112 H360" stroke="#8b9aab" stroke-width="2"/>
+  <path d="M580 112 H660" stroke="#8b9aab" stroke-width="2"/>
+  <rect x="80" y="200" width="220" height="80" rx="10" fill="#0c1117" stroke="#243041"/>
+  <text x="100" y="235" fill="#8b9aab" font-size="13">enrollment-service</text>
+  <text x="100" y="258" fill="#e8eef5" font-size="13">register � confirm seats</text>
+  <rect x="340" y="200" width="220" height="80" rx="10" fill="#0c1117" stroke="#243041"/>
+  <text x="360" y="235" fill="#8b9aab" font-size="13">content-service</text>
+  <text x="360" y="258" fill="#e8eef5" font-size="13">projects � site copy</text>
+  <rect x="600" y="200" width="240" height="80" rx="10" fill="#0c1117" stroke="#243041"/>
+  <text x="620" y="235" fill="#8b9aab" font-size="13">agents</text>
+  <text x="620" y="258" fill="#e8eef5" font-size="13">content API � Cursor PRs</text>
+  <text x="40" y="360" fill="#8b9aab" font-size="13">Atomic seat confirmation � approval gates � Next.js tag revalidation after writes</text>
+</svg>
