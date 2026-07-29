@@ -1,0 +1,94 @@
+# Local full stack: Postgres + app
+# Usage:
+#   docker compose up --build
+#   docker compose --profile seed run --rm seed
+#
+# Build cache: package installs live in BuildKit npm cache + deps image layer.
+# Code-only edits rebuild the builder/runner stages without re-downloading pkgs.
+
+name: portfolio
+
+services:
+  db:
+    image: postgres:16-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: portfolio
+      POSTGRES_DB: portfolio
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      # Persist BuildKit cache on the host so `docker compose build` reuses npm packs
+      cache_from:
+        - type=local,src=.docker-cache
+      cache_to:
+        - type=local,dest=.docker-cache,mode=max
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://portfolio:portfolio@db:5432/portfolio?schema=public
+      AUTH_SECRET: ${AUTH_SECRET:-local-dev-secret-change-me-please-32chars}
+      NEXTAUTH_SECRET: ${AUTH_SECRET:-local-dev-secret-change-me-please-32chars}
+      AUTH_TRUST_HOST: "true"
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-mhhfnesh@gmail.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-ChangeMeNow!123}
+      ANALYTICS_DAILY_SALT: ${ANALYTICS_DAILY_SALT:-local-analytics-salt}
+      AGENTS_DISABLED: ${AGENTS_DISABLED:-true}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@localhost}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # One-shot seed (uses deps stage — node_modules already cached)
+  seed:
+    profiles: ["seed"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: deps
+      cache_from:
+        - type=local,src=.docker-cache
+      cache_to:
+        - type=local,dest=.docker-cache,mode=max
+    working_dir: /app
+    environment:
+      DATABASE_URL: postgresql://portfolio:portfolio@db:5432/portfolio?schema=public
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-mhhfnesh@gmail.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-ChangeMeNow!123}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+    volumes:
+      - ./prisma:/app/prisma:ro
+      - ./package.json:/app/package.json:ro
+    command:
+      [
+        "sh",
+        "-c",
+        "npx prisma generate && npx tsx prisma/seed.ts",
+      ]
+    depends_on:
+      db:
+        condition: service_healthy
+      app:
+        condition: service_healthy
+
+volumes:
+  pgdata:

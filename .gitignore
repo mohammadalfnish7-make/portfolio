@@ -33,7 +33,8 @@ prisma/*.db-journal
 
 # coverage / test
 coverage/
-.lighthouseci/
+.docker-cache/
+
 
 # IDE
 .idea/

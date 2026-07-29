@@ -10,7 +10,10 @@ node_modules
 out
 coverage
 .lighthouseci
+.docker-cache
 README.md
 docs
 *.md
 !public/**
+docker-compose*.yml
+.github

@@ -28,7 +28,32 @@ npm run start   # or: npm run dev
 
 Admin login uses `ADMIN_EMAIL` / `ADMIN_PASSWORD` from the seed.
 
-## Coolify deploy
+## Docker Compose (local full stack)
+
+Requires Docker Desktop / Engine with BuildKit enabled (default on recent Docker).
+
+```bash
+# First time — build (downloads pkgs once) + start Postgres + app
+DOCKER_BUILDKIT=1 docker compose up --build
+
+# After that, code-only changes: rebuild uses cached npm layer
+DOCKER_BUILDKIT=1 docker compose up --build -d
+
+# Seed admin + courses (one-shot)
+docker compose --profile seed run --rm seed
+```
+
+- App: http://localhost:3000  
+- Postgres: `localhost:5432` (`portfolio` / `portfolio` / db `portfolio`)  
+- Migrations run automatically on app start  
+- npm packages are cached in `.docker-cache/` + the `deps` image layer — editing app code does **not** re-download packages unless `package.json` / lockfile changed
+
+Stop and wipe DB volume:
+
+```bash
+docker compose down -v
+```
+
 
 1. Provision Postgres in Coolify (internal network only — do **not** publish the DB port).
 2. Build images in **GitHub Actions** (see `.github/workflows/build.yml`) and push to GHCR — do not build on the VPS.
